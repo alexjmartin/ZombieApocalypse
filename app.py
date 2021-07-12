@@ -32,7 +32,7 @@ app.layout = html.Div(children=[
 
     html.Div(dcc.Markdown('''
     # Zombie Simulator
-    ##### This app allows for the simulation of various possible scenarios for the spread of an infectious Zombie disease. For details on what each variable affects please see <add link>
+    ##### This app allows for the simulation of various possible scenarios for the spread of an infectious Zombie disease. For details on what each variable affects please see [Readme](https://github.com/alexjmartin/ZombieApocalypse/blob/main/README.md) 
     ##### Please note that for populations of over X size the simulator may take a number of seconds to run
     >For the initial simulation default values of zombies=1, infection_chance=0.8, infection_radius=20, birth_rate=0.005, nat_death=0.001, zombie_lifespan=7, total_pop=400, days=30,
     >           zombie_speed=0.5, human_speed=0.7, map_size=400 are used 
