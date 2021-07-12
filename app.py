@@ -26,6 +26,8 @@ pop_colours = {"Population_1": "forestgreen",
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
+server = app.server
+
 app.layout = html.Div(children=[
 
     html.Div(dcc.Markdown('''
@@ -152,4 +154,4 @@ def update_output_div(input_zombies, input_infection_chance, input_infection_rad
 port = 8011
 
 if __name__ == '__main__':
-    app.run_server(debug=True, port=port)
+    app.run_server()
