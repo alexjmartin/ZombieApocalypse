@@ -1,6 +1,5 @@
 absl-py==0.12.0
 affine==2.3.0
-anyio @ file:///D:/bld/anyio_1624038035120/work/dist
 argon2-cffi @ file:///D:/bld/argon2-cffi_1605217174718/work
 asgiref==3.3.4
 astor==0.8.1
