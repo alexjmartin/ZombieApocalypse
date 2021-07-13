@@ -5,11 +5,13 @@ import numpy as np
 import pandas as pd
 from collections import Counter
 
-def infect(current_status, infection_chance):
-    if (random.random() < infection_chance) & (current_status != 5):
+def infect(current_status, infection_chance, immunity_chance):
+    if (random.random() < immunity_chance) & (current_status != 5):
+        status = 5
+    elif (random.random() < infection_chance) & (current_status != 5):
         status = 3
     else:
-        status = 5
+        status = current_status
     return status
 
 def proximity_test(zombie_x, zombie_y, person_x, person_y, infection_radius):
@@ -19,8 +21,8 @@ def proximity_test(zombie_x, zombie_y, person_x, person_y, infection_radius):
     return in_radius
 
 def movement(speed, x_coord, y_coord, random_move):
-    x = x_coord + speed * random_move
-    y = y_coord + speed * random_move
+    x = x_coord + speed * random_move[0]
+    y = y_coord + speed * random_move[1]
     return x, y
 
 def timenow():
@@ -45,7 +47,7 @@ def pop_add(n, map_size, pop='uninfected'):
     return pop_list
 
 def Zombie_sim(infection_chance=0.8, infection_radius=20, birth_rate=0.005, nat_death=0.001, zombie_lifespan=7, total_pop=400, days=30,
-               zombie_speed=0.5, human_speed=0.7, map_size=400, zombies=1, min_travel=-20.5, max_travel=20.5):
+               zombie_speed=0.5, human_speed=0.7, map_size=400, zombies=1, immunity_chance=0.01, vaccine_day=90, vaccine_efficacy = 0.8, min_travel=-20.5, max_travel=20.5):
     start_time = timenow()
     df = pd.DataFrame({0: [], 1: [], 2: [], 3: []})
     df = df.append(pd.DataFrame(pop_add(total_pop, map_size)))
@@ -58,9 +60,6 @@ def Zombie_sim(infection_chance=0.8, infection_radius=20, birth_rate=0.005, nat_
 
     df.index = df['id']
 
-    stage1 = timenow() - start_time
-
-    uninfected_list = []
     df_hist = pd.DataFrame({0: [], 1: [], 2: [], 3: [], 4: []})
 
     df_hist = df_hist.rename(columns={0: 'x_coord', 1: 'y_coord', 2: 'population', 3: 'days_infected', 4: 'day'})
@@ -70,16 +69,13 @@ def Zombie_sim(infection_chance=0.8, infection_radius=20, birth_rate=0.005, nat_
         #  print(f'{timenow()} Start of day {day}')
         df_hist = df_hist.append(df)
 
-        infect_list = []
-
-        zombie_list = []
+        if day >= vaccine_day:
+            immunity_chance = vaccine_efficacy
 
         uninfected_list = list(df.query('population not in [3,4]').id.values)
 
         zombie_x, zombie_y = df[df['population'] == 3][['x_coord']].values, df[df['population'] == 3][
             ['y_coord']].values
-
-        stage2 = timenow() - stage1
 
         for nz in uninfected_list:
             #            print('nz is', nz)
@@ -90,13 +86,13 @@ def Zombie_sim(infection_chance=0.8, infection_radius=20, birth_rate=0.005, nat_
                 person_x = df['x_coord'][nz]
                 person_y = df['y_coord'][nz]
                 if proximity_test(zombie_x, zombie_y, person_x, person_y, infection_radius) == True:
-                    df.iloc[nz, 2] = infect(df.iloc[nz, 2], infection_chance)
+                    df.iloc[nz, 2] = infect(df.iloc[nz, 2], infection_chance, immunity_chance)
 
         # Movement of non-dead people
         a = df.query("population not in [4,3]").iloc[:, 0]
         b = df.query("population not in [4,3]").iloc[:, 1]
 
-        random_movement = np.random.uniform(min_travel, max_travel, len(a))
+        random_movement = [np.random.uniform(min_travel, max_travel, len(a)), np.random.uniform(min_travel, max_travel, len(a))]
 
         df.iloc[a.index, 0], df.iloc[a.index, 1] = movement(human_speed, a, b, random_movement)
 
@@ -104,7 +100,7 @@ def Zombie_sim(infection_chance=0.8, infection_radius=20, birth_rate=0.005, nat_
         a = df.query("population == 3").iloc[:, 0]
         b = df.query("population == 3").iloc[:, 1]
 
-        random_movement = np.random.uniform(min_travel, max_travel, len(a))
+        random_movement = [np.random.uniform(min_travel, max_travel, len(a)), np.random.uniform(min_travel, max_travel, len(a))]
 
         df.iloc[a.index, 0], df.iloc[a.index, 1] = movement(zombie_speed, a, b, random_movement)
         #    print(f'{timenow()} Movement done for day {day}')
@@ -118,24 +114,24 @@ def Zombie_sim(infection_chance=0.8, infection_radius=20, birth_rate=0.005, nat_
 
         new_borns = Counter(birthlist < birth_rate)[True]
 
-        a = pop_add(new_borns, map_size)
+        babies = pop_add(new_borns, map_size)
 
-        aaa = []
+        baby_list = []
 
         d = df['id'].max()
 
-        for p in a:
-            d = d + 1
-            ddd = {}
-            ddd['x_coord'] = p[0]
-            ddd['y_coord'] = p[1]
-            ddd['population'] = p[2]
-            ddd['days_infected'] = p[3]
-            ddd['id'] = d
-            ddd['day'] = day
-            aaa.append(ddd)
+        for p in babies:
+            d = d + 1 # get next id for df_hist
+            baby_dict = {}
+            baby_dict['x_coord'] = p[0]
+            baby_dict['y_coord'] = p[1]
+            baby_dict['population'] = p[2]
+            baby_dict['days_infected'] = p[3]
+            baby_dict['id'] = d
+            baby_dict['day'] = day
+            baby_list.append(baby_dict)
 
-        df = df.append(aaa, ignore_index=True)
+        df = df.append(baby_list, ignore_index=True)
 
         infections = Counter(df.query('population == 3 and days_infected == 1')['population'])[3]
 
