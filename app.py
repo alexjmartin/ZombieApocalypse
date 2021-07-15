@@ -15,7 +15,12 @@ import zombie_library as zl
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 variable_list = ['zombies', 'infection_chance', 'infection_radius', 'birth_rate', 'nat_death', 'zombie_lifespan', 'total_pop', 'days',
-               'zombie_speed', 'human_speed', 'map_size']
+               'zombie_speed', 'human_speed', 'map_size', 'immunity_chance', 'vaccine_day', 'vaccine_efficacy']
+
+variable_dict = {'zombies': 1, 'infection_chance': 0.8, 'infection_radius': 20, 'birth_rate': 0.005, 'nat_death': 0.001, 'zombie_lifespan': 7, 'total_pop': 400, 'days': 30,
+               'zombie_speed': 0.5, 'human_speed': 0.7, 'map_size': 400, 'immunity_chance': 0.01, 'vaccine_day': 20, 'vaccine_efficacy': 0.8}
+
+default_list = []
 
 pop_colours = {"Population_1": "forestgreen",
 	"Population_2": "deepskyblue",
