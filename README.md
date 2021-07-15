@@ -2,7 +2,7 @@
 This repository houses the code for the modelling of a Zombie apocalypse over a number of days. It's split in to:
 - The WebApp (App: https://zombie-simulator.herokuapp.com/) which allows anyone to run a one off simulation using the simulation module and review the results 
 - The core simulation module (zombie_library)
-- The zombie_simulator script which is used to run the simulation module multiple times and output the results of these runs to csv
+- The zombie_simulation script which is used to run the simulation module multiple times and output the results of these runs to csv
 
 ## WebApp
 The WebApp simulator can be access at https://zombie-simulator.herokuapp.com, though not guarentees are made for availability and the first run simulation for a session will likely take a few moments to complete. The parameters that can be provided to the simulator are:
