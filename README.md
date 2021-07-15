@@ -7,6 +7,7 @@ This repository houses the code for the modelling of a Zombie apocalypse over a 
 ## WebApp
 The WebApp simulator can be access at https://zombie-simulator.herokuapp.com, though not guarentees are made for availability and the first run simulation for a session will likely take a few moments to complete. The parameters that can be provided to the simulator are:
 |Zombie speed |()– |The ground that can be covered by a zombie in a day|
+|---|---|---|
 - Human speed – The ground that can be covered by a human in a day
 - Zombies – The initial number of zombies which are seeded in a population
 - Total pop – The total number of humans across the two distinct populations 
