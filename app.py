@@ -32,24 +32,31 @@ app.layout = html.Div(children=[
 
     html.Div(dcc.Markdown('''
     # Zombie Simulator
-    ##### This app allows for the simulation of various possible scenarios for the spread of an infectious Zombie disease. For details on what each variable affects please see [Readme](https://github.com/alexjmartin/ZombieApocalypse/blob/main/README.md) 
+    ##### This app allows for the simulation of various possible scenarios for the spread of an infectious Zombie disease. For details on what each variable affects please see [README](https://github.com/alexjmartin/ZombieApocalypse/blob/main/README.md)
     ##### Please note that for populations of over X size the simulator may take a number of seconds to run
-    >For the initial simulation default values of zombies=1, infection_chance=0.8, infection_radius=20, birth_rate=0.005, nat_death=0.001, zombie_lifespan=7, total_pop=400, days=30,
-    >           zombie_speed=0.5, human_speed=0.7, map_size=400 are used 
+    >For the initial simulation default values of:
+    >zombies=1, infection_chance=0.8, infection_radius=20, birth_rate=0.005, nat_death=0.001, zombie_lifespan=7, total_pop=400, days=30,
+    >           zombie_speed=0.5, human_speed=0.7, immunity_chance=0.01, vaccine_day=20, vaccine_efficacy = 0.8, map_size=400 are used 
      ''')
 
         ),
 
+html.Div([dcc.Markdown('''
+Zombies | Infection chance 
+     ''')
 
+    ]),
     html.Div(
         [
 
             dcc.Input(
-                id="input_{}".format(_), 
+                id="input_{}".format(var),
                 type='text',
-                placeholder="{}".format(_),
+              #  value='{}'.format(val),
+                placeholder="{}".format(var),
             )
-            for _ in variable_list
+
+            for var, val in variable_dict.items()
         ]
         + [html.Div(id="out-all-types")]
     ),
@@ -71,6 +78,7 @@ app.layout = html.Div(children=[
 
 ])
 
+
 @app.callback(
     [Output('graph1', 'figure'),
     Output('graph2', 'figure')],
@@ -91,14 +99,14 @@ app.layout = html.Div(children=[
 def update_output_div(input_zombies, input_infection_chance, input_infection_radius, input_birth_rate, input_nat_death, input_zombie_lifespan, input_total_pop, input_days, input_zombie_speed, input_human_speed, input_map_size, n_clicks):
     if n_clicks is None:
         df_hist = zl.Zombie_sim()
-        df_hist['population'] = df_hist['population'].astype(str)
         dfp = df_hist.groupby(['population', 'day']).count().reset_index()
-        fig = px.line(dfp, x='day', y='id', color='population', color_discrete_map=pop_colours)
+        fig = px.line(dfp, x='day', y='id', color='population', color_discrete_map=pop_colours, title=f'Population counts over the specified number of simulation days')
+        fig.update_layout(yaxis_title='population count')
         fig2 = px.scatter(df_hist, x="x_coord", y="y_coord", animation_frame="day", animation_group="id",
-                          color="population", color_discrete_map=pop_colours,  hover_name="population",
-                          range_x=[0, 400], range_y=[0, 400])
+                          color="population", color_discrete_map=pop_colours,  hover_name="population", title='Scatter map showing the progression of the simulated zombie apocalypse over time',
+                          range_x=[0, input_map_size], range_y=[0, input_map_size])
         fig2.layout.updatemenus[0].buttons[0].args[1]["frame"]["duration"] = 1000
-        fig2.add_trace(go.Scatter(x=[100000], y=[100000],
+        fig2.add_trace(go.Scatter(x=[input_map_size], y=[input_map_size],
                                   mode='markers',
                                   name='Immune',
                                   legendgroup='Immune',
@@ -107,7 +115,7 @@ def update_output_div(input_zombies, input_infection_chance, input_infection_rad
                                   ),
                                   showlegend=True))
 
-        fig2.add_trace(go.Scatter(x=[100000], y=[100000],
+        fig2.add_trace(go.Scatter(x=[input_map_size], y=[input_map_size],
                                   mode='markers',
                                   name='Dead',
                                   legendgroup='Dead',
@@ -123,15 +131,15 @@ def update_output_div(input_zombies, input_infection_chance, input_infection_rad
             input_days), float(input_zombie_speed), float(input_human_speed), int(input_map_size)
         print(zl.timenow(), input_infection_chance, input_infection_radius, input_birth_rate, input_nat_death, input_zombie_lifespan, input_total_pop, input_days, input_zombie_speed, input_human_speed, input_map_size, input_zombies)
         df_hist = zl.Zombie_sim(input_infection_chance, input_infection_radius, input_birth_rate, input_nat_death, input_zombie_lifespan, input_total_pop, input_days, input_zombie_speed, input_human_speed, input_map_size, input_zombies)
-        df_hist['population'] = df_hist['population'].astype(str)
         dfp = df_hist.groupby(['population', 'day']).count().reset_index()
         n_clicks = 0
-        fig = px.line(dfp, x='day', y='id', color='population', color_discrete_map=pop_colours)
+        fig = px.line(dfp, x='day', y='id', color='population', color_discrete_map=pop_colours, title=f'Population counts over {input_days} simulation days')
+        fig.update_layout(yaxis_title='population count')
         fig2 = px.scatter(df_hist, x="x_coord", y="y_coord", animation_frame="day", animation_group="id",
-                          color="population", color_discrete_map=pop_colours, hover_name="population",
+                          color="population", color_discrete_map=pop_colours, hover_name="population", title='Scatter map showing the progression of the simulated zombie apocalypse over time',
                           range_x=[0, input_map_size], range_y=[0, input_map_size])
         fig2.layout.updatemenus[0].buttons[0].args[1]["frame"]["duration"] = 1000
-        fig2.add_trace(go.Scatter(x=[100000], y=[100000],
+        fig2.add_trace(go.Scatter(x=[input_map_size], y=[input_map_size],
                                   mode='markers',
                                   name='Immune',
                                   legendgroup='Immune',
@@ -140,7 +148,7 @@ def update_output_div(input_zombies, input_infection_chance, input_infection_rad
                                   ),
                                   showlegend=True))
 
-        fig2.add_trace(go.Scatter(x=[100000], y=[100000],
+        fig2.add_trace(go.Scatter(x=[input_map_size], y=[input_map_size],
                                   mode='markers',
                                   name='Dead',
                                   legendgroup='Dead',
