@@ -17,7 +17,7 @@ The WebApp simulator can be access at https://zombie-simulator.herokuapp.com, th
 |Birth rate |0.0001–1 |The speed at which new humans are added to the populations|
 |Natural death rate |0.0001–1 |The speed at which new humans die, unrelated to the zombie outbreak|
 |Zombie lifespan |1-100 |The approximate lifespan of a zombie within the simulation. Ultimately the lifespan for each zombie is selected from a normal distribution with mean equal to the zombie lifespan and deviation equal to one|
-|Map size |0.0001–1 |This is the square area that participants of the simulation will initial be introduced in, coupled with total pop this allows for varying of populations densities.|
+|Map size |100-1000 |This is the square area that participants of the simulation will initial be introduced in, coupled with total pop this allows for varying of populations densities.|
 |Immunity Chance |0.01–1 |The probability of an infection event resulting in immunity for the human |
 |Vaccine efficacy |0.1-1 | The effectiveness of the vaccine once it is introduced, this value will update immunity chance on the vaccine day|
 |Vaccine day |1-120 |The day in the simulation when the vaccine will be introduced (all people are assumed to be instantly vaccinated)|
